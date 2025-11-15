@@ -38,38 +38,50 @@ export default function Home() {
   })
 
   useEffect(() => {
-    // Simulate fetching sensor data
-    const sensorInterval = setInterval(() => {
-      setSensors({
-        temperature: Math.round((Math.random() * 15 + 18) * 10) / 10,
-        humidity: Math.round(Math.random() * 40 + 40),
-        lightLevel: Math.round(Math.random() * 60 + 40),
-        lastUpdated: new Date().toLocaleTimeString(),
-      })
-    }, 5000)
+    // Función para obtener datos del API
+    const fetchSensorData = async () => {
+      try {
+        const response = await fetch('/api/sensores')
+        const result = await response.json()
+        
+        if (result.status === 'ok' && result.data) {
+          const data = result.data
+          
+          // Actualizar sensores
+          setSensors({
+            temperature: data.temperature || 0,
+            humidity: data.humidity || 0,
+            lightLevel: data.lightLevel || 0,
+            lastUpdated: new Date(data.lastUpdated).toLocaleTimeString(),
+          })
+          
+          // Actualizar sistema de riego
+          setIrrigation({
+            name: 'Sistema de Riego',
+            status: data.irrigation === 'on' ? 'on' : 'off',
+            lastUpdated: new Date(data.lastUpdated).toLocaleTimeString(),
+          })
+          
+          // Actualizar sistema de luz
+          setLight({
+            name: 'Sistema de Luz',
+            status: data.light === 'on' ? 'on' : 'off',
+            lastUpdated: new Date(data.lastUpdated).toLocaleTimeString(),
+          })
+        }
+      } catch (error) {
+        console.error('Error al obtener datos:', error)
+      }
+    }
 
-    // Simulate fetching irrigation system data
-    const irrigationInterval = setInterval(() => {
-      setIrrigation((prev) => ({
-        ...prev,
-        status: Math.random() > 0.5 ? 'on' : 'off',
-        lastUpdated: new Date().toLocaleTimeString(),
-      }))
-    }, 7000)
+    // Obtener datos inmediatamente
+    fetchSensorData()
 
-    // Simulate fetching light system data
-    const lightInterval = setInterval(() => {
-      setLight((prev) => ({
-        ...prev,
-        status: Math.random() > 0.5 ? 'on' : 'off',
-        lastUpdated: new Date().toLocaleTimeString(),
-      }))
-    }, 6000)
+    // Actualizar cada 2 segundos
+    const interval = setInterval(fetchSensorData, 2000)
 
     return () => {
-      clearInterval(sensorInterval)
-      clearInterval(irrigationInterval)
-      clearInterval(lightInterval)
+      clearInterval(interval)
     }
   }, [])
 
