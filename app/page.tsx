@@ -37,6 +37,12 @@ export default function Home() {
     lastUpdated: new Date().toLocaleTimeString(),
   })
 
+  const [presence, setPresence] = useState<SystemData>({
+    name: 'Detección de Presencia',
+    status: 'off',
+    lastUpdated: new Date().toLocaleTimeString(),
+  })
+
   useEffect(() => {
     // Función para obtener datos del API
     const fetchSensorData = async () => {
@@ -66,6 +72,13 @@ export default function Home() {
           setLight({
             name: 'Sistema de Luz',
             status: data.light === 'on' ? 'on' : 'off',
+            lastUpdated: new Date(data.lastUpdated).toLocaleTimeString(),
+          })
+          
+          // Actualizar sensor de presencia
+          setPresence({
+            name: 'Detección de Presencia',
+            status: data.presencia === 'on' ? 'on' : 'off',
             lastUpdated: new Date(data.lastUpdated).toLocaleTimeString(),
           })
         }
@@ -107,6 +120,36 @@ export default function Home() {
         <div className="grid gap-6 md:grid-cols-2">
           <SystemCard system={irrigation} />
           <SystemCard system={light} />
+        </div>
+
+        {/* Presence detection box */}
+        <div className="mt-6">
+          <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-medium text-card-foreground">
+                  {presence.name}
+                </h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Última actualización: {presence.lastUpdated}
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-sm font-medium text-muted-foreground">
+                  Estado:
+                </span>
+                <div
+                  className={`rounded-full px-4 py-2 text-sm font-medium ${
+                    presence.status === 'on'
+                      ? 'bg-green-500/10 text-green-600 dark:bg-green-500/20 dark:text-green-400'
+                      : 'bg-gray-500/10 text-gray-600 dark:bg-gray-500/20 dark:text-gray-400'
+                  }`}
+                >
+                  {presence.status === 'on' ? 'Detectado' : 'No Detectado'}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </main>
