@@ -5,7 +5,7 @@ let latestSensorData = {
   lightLevel: 0,
   irrigation: "off",
   light: "off",
-  presencia: "off",
+  presence: "off",
   lastUpdated: new Date().toISOString()
 };
 

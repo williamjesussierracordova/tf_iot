@@ -78,7 +78,7 @@ export default function Home() {
           // Actualizar sensor de presencia
           setPresence({
             name: 'Detección de Presencia',
-            status: data.presencia === 'on' ? 'on' : 'off',
+            status: data.presence === 'on' ? 'on' : 'off',
             lastUpdated: new Date(data.lastUpdated).toLocaleTimeString(),
           })
         }
